@@ -1,16 +1,16 @@
-_           = require 'lodash'
-fs          = require 'fs'
-path        = require 'path'
-colors      = require 'colors'
-program     = require 'commander'
-Printer     = require './src/printer'
-packageJSON = require './package.json'
+fs                 = require 'fs'
+path               = require 'path'
+_                  = require 'lodash'
+colors             = require 'colors'
+program            = require 'commander'
 
+packageJSON        = require './package.json'
+Printer            = require './src/printer'
 DeployStateService = require './src/deploy-state-service'
 
 program
   .version packageJSON.version
-  .usage '[options] <project-name> <tag>'
+  .usage '[options] <project-name>'
   .option '-u, --deploy-state-uri',
     'Deploy State URI, should contain authentication. (env: DEPLOY_STATE_URI)'
   .option '-o, --owner <octoblu>', 'Project owner'
@@ -19,7 +19,7 @@ program
 class Command
   constructor: ->
     process.on 'uncaughtException', @die
-    {@repo, @owner, @tag, @json, deployStateUri} = @parseOptions()
+    {@repo, @owner, @json, deployStateUri} = @parseOptions()
     @deployStateService = new DeployStateService { deployStateUri }
 
   parseOptions: =>
@@ -27,41 +27,30 @@ class Command
     repo = program.args[0]
     repo ?= @_getPackageName()
 
-    tag = program.args[1]
-    tag ?= @_getPackageVersion()
-
     { owner, json, deployStateUri } = program
     owner ?= 'octoblu'
 
     deployStateUri ?= process.env.DEPLOY_STATE_URI
 
     throw new Error 'Missing repo' unless repo?
-    throw new Error 'Missing tag' unless tag?
     throw new Error 'Missing deploy state uri' unless deployStateUri?
 
-    return { repo, owner, json: json?, deployStateUri, tag }
+    return { repo, owner, json: json?, deployStateUri }
 
   run: =>
-    @deployStateService.getStatus { @repo, @owner, @tag }, (error, result) =>
+    @deployStateService.getList { @repo, @owner }, (error, result) =>
       return @die error if error?
-      return @die new Error 'Deployment not found' unless result?
-      @_print result
+      @_print result.deployments
 
-  _print: (result) =>
+  _print: (deployments=[]) =>
     printer = new Printer { @json }
-    printer.printDeployment result
+    _.each deployments, printer.printDeployment
 
   _getPackageName: =>
     pkgPath = path.join process.cwd(), 'package.json'
     try
       pkg = JSON.parse fs.readFileSync pkgPath
       return pkg.name
-
-  _getPackageVersion: =>
-    pkgPath = path.join process.cwd(), 'package.json'
-    try
-      pkg = JSON.parse fs.readFileSync pkgPath
-      return "v#{pkg.version}"
 
   die: (error) =>
     return process.exit(0) unless error?
