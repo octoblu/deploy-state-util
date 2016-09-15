@@ -5,6 +5,8 @@ packageJSON = require './package.json'
 program
   .version packageJSON.version
   .option 'status', 'get the status of a deploy'
+  .option 'watch', 'watch the status of a deploy'
+  .option 'list', 'list deployments'
 
 class Command
   constructor: ->
