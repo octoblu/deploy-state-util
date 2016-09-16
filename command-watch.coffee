@@ -48,7 +48,7 @@ class Command
 
   getStatus: =>
     cliClear()
-    console.log '[updated at] ', colors.cyan moment().toString()
+    console.log '[refreshed at] ', colors.cyan moment().toString()
     @deployStateService.getStatus { @repo, @owner, @tag }, (error, result) =>
       return @die error if error?
       return @die new Error 'Deployment not found' unless result?
