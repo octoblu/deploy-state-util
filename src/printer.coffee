@@ -3,18 +3,22 @@ colors = require 'colors'
 moment = require 'moment'
 
 class Printer
-  constructor: ({ @json }) ->
+  constructor: ({ @json, @slug }) ->
 
   printDeployment: (result) =>
+    return @_printEmpty() if _.isEmpty result
     return @_printJSON result if @json
     @_printPretty result
+
+  _printEmpty: =>
+    console.log colors.yellow "No deployment exists for #{@slug}"
 
   _printJSON: (result) =>
     console.log JSON.stringify result, null, 2
 
   _printPretty: (result) =>
     console.log ''
-    console.log "[deployment]", colors.cyan "#{result.owner}/#{result.repo}:#{result.tag}"
+    console.log "[deployment]", colors.cyan "#{@slug}"
     @_printBuild result
     @_printCluster result
     console.log ''

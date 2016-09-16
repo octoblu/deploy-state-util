@@ -44,11 +44,11 @@ class Command
   run: =>
     @deployStateService.getStatus { @repo, @owner, @tag }, (error, result) =>
       return @die error if error?
-      return @die new Error 'Deployment not found' unless result?
       @_print result
 
   _print: (result) =>
-    printer = new Printer { @json }
+    slug = "#{@owner}/#{@repo}:#{@tag}"
+    printer = new Printer { @json, slug }
     printer.printDeployment result
 
   _getPackageName: =>

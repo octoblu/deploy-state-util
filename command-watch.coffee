@@ -51,12 +51,12 @@ class Command
     console.log '[refreshed at] ', colors.cyan moment().toString()
     @deployStateService.getStatus { @repo, @owner, @tag }, (error, result) =>
       return @die error if error?
-      return @die new Error 'Deployment not found' unless result?
       _.delay @getStatus, 1000 * 40
       @_print result
 
   _print: (result) =>
-    printer = new Printer { @json }
+    slug = "#{@owner}/#{@repo}:#{@tag}"
+    printer = new Printer { @json, slug }
     printer.printDeployment result
 
   _getPackageName: =>
