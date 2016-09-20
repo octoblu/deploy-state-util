@@ -34,7 +34,11 @@ class GovernatorService
       return callback error if error?
 
       deploys = _.pickBy body, (value, key) =>
-        return _.startsWith key, "governator:/#{owner}/#{repo}"
+        startsWith = _.startsWith key, "governator:/#{owner}/#{repo}"
+        endsWith = true
+        endsWith = _.endsWith key, ":#{tag}" if tag?
+        return startsWith and endsWith
+
       debug 'deploys', deploys
       callback null, @formatAll deploys
 

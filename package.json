@@ -1,6 +1,6 @@
 {
   "name": "deploy-state-util",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "CLI utility for managing the deploy-state-service",
   "keywords": [
     "deploy-state"

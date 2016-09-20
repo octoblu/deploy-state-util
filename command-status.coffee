@@ -49,7 +49,7 @@ class Command
       return @die error if error?
       @serviceStateService.getStatuses { @repo, @owner }, (error, dockerUrls) =>
         return @die error if error?
-        @governatorService.getStatuses { @repo, @owner }, (error, governators) =>
+        @governatorService.getStatuses { @repo, @owner, @tag }, (error, governators) =>
           return @die error if error?
           return printer.printJSON { deployment, dockerUrls, governators } if @json
           printer.printDeployment deployment
