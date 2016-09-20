@@ -4,23 +4,27 @@ path        = require 'path'
 colors      = require 'colors'
 program     = require 'commander'
 Printer     = require './src/printer'
+Config      = require './src/config.coffee'
 packageJSON = require './package.json'
 
+GovernatorService = require './src/governator-service.coffee'
 DeployStateService = require './src/deploy-state-service'
+ServiceStateService  = require './src/service-state-service'
 
 program
   .version packageJSON.version
   .usage '[options] <project-name> <tag>'
-  .option '-u, --deploy-state-uri',
-    'Deploy State URI, should contain authentication. (env: DEPLOY_STATE_URI)'
   .option '-o, --owner <octoblu>', 'Project owner'
   .option '-j, --json', 'Print JSON'
 
 class Command
   constructor: ->
     process.on 'uncaughtException', @die
-    {@repo, @owner, @tag, @json, deployStateUri} = @parseOptions()
-    @deployStateService = new DeployStateService { deployStateUri }
+    {@repo, @owner, @tag, @json} = @parseOptions()
+    config = new Config().get()
+    @deployStateService = new DeployStateService { config }
+    @governatorService = new GovernatorService { config }
+    @serviceStateService = new ServiceStateService { config }
 
   parseOptions: =>
     program.parse process.argv
@@ -30,26 +34,27 @@ class Command
     tag = program.args[1]
     tag ?= @_getPackageVersion()
 
-    { owner, json, deployStateUri } = program
+    { owner, json } = program
     owner ?= 'octoblu'
-
-    deployStateUri ?= process.env.DEPLOY_STATE_URI
 
     throw new Error 'Missing repo' unless repo?
     throw new Error 'Missing tag' unless tag?
-    throw new Error 'Missing deploy state uri' unless deployStateUri?
 
-    return { repo, owner, json: json?, deployStateUri, tag }
+    return { repo, owner, json: json?, tag }
 
   run: =>
-    @deployStateService.getStatus { @repo, @owner, @tag }, (error, result) =>
-      return @die error if error?
-      @_print result
-
-  _print: (result) =>
     slug = "#{@owner}/#{@repo}:#{@tag}"
     printer = new Printer { @json, slug }
-    printer.printDeployment result
+    @deployStateService.getStatus { @repo, @owner, @tag }, (error, deployment) =>
+      return @die error if error?
+      @serviceStateService.getStatuses { @repo, @owner }, (error, dockerUrls) =>
+        return @die error if error?
+        @governatorService.getStatuses { @repo, @owner }, (error, governators) =>
+          return @die error if error?
+          return printer.printJSON { deployment, dockerUrls, governators } if @json
+          printer.printDeployment deployment
+          printer.printDockerUrls dockerUrls
+          printer.printGovernators governators
 
   _getPackageName: =>
     pkgPath = path.join process.cwd(), 'package.json'

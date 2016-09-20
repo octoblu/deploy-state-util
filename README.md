@@ -12,6 +12,46 @@
 npm install --global deploy-state-util
 ```
 
+Make sure muxblu is up-to-date, and you've ran `./install.sh utils`
+
+## Example Configuration
+
+**Location:** `~/.octoblu/depoy-state.json`
+
+```json
+{
+  "deploy-state": {
+    "hostname": "deploy-state.octoblu.com",
+    "username": "...",
+    "password": "..."
+  },
+  "governators": {
+    "cluster-1": {
+      "hostname": "governator-cluster-1.octoblu.com",
+      "username": "...",
+      "password": "..."
+    },
+    "cluster-2": {
+      "hostname": "governator-cluster-2.octoblu.com",
+      "username": "...",
+      "password": "..."
+    }
+  },
+  "service-state": {
+    "cluster-1": {
+      "hostname": "service-state-cluster-1.octoblu.com",
+      "username": "...",
+      "password": "..."
+    },
+    "cluster-2": {
+      "hostname": "service-state-cluster-2.octoblu.com",
+      "username": "...",
+      "password": "..."
+    }
+  }
+}
+```
+
 ### Usage
 
 ```bash
