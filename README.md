@@ -20,6 +20,22 @@ npm install --global deploy-state-util
 
 ## Commands
 
+### list
+
+```bash
+deploy-state list
+```
+
+List the deployments of a project. The project name will be auto assummed when inside a node project.
+
+### configure
+
+```bash
+deploy-state configure
+```
+
+Configures a project to work with the deploy-state service.
+
 ### status
 
 ```bash
@@ -37,15 +53,6 @@ deploy-state watch
 This is the alternative to `wump`.
 
 Watch the status of a deployment. The project name and version will be auto assummed when inside a node project.
-
-### list
-
-```bash
-deploy-state list
-```
-
-List the deployments of a project. The project name will be auto assummed when inside a node project.
-
 
 ## Example Configuration
 

@@ -1,6 +1,4 @@
 _           = require 'lodash'
-fs          = require 'fs'
-path        = require 'path'
 colors      = require 'colors'
 program     = require 'commander'
 Printer     = require './src/printer'
@@ -20,19 +18,19 @@ program
 class Command
   constructor: ->
     process.on 'uncaughtException', @die
+    @config = new Config()
     {@repo, @owner, @tag, @json} = @parseOptions()
-    config = new Config().get()
-    @deployStateService = new DeployStateService { config }
-    @governatorService = new GovernatorService { config }
-    @serviceStateService = new ServiceStateService { config }
+    @deployStateService = new DeployStateService { config: @config.get() }
+    @governatorService = new GovernatorService { config: @config.get() }
+    @serviceStateService = new ServiceStateService { config: @config.get() }
 
   parseOptions: =>
     program.parse process.argv
     repo = program.args[0]
-    repo ?= @_getPackageName()
+    repo ?= @config.getPackageName()
 
     tag = program.args[1]
-    tag ?= @_getPackageVersion()
+    tag ?= @config.getPackageVersion()
 
     { owner, json } = program
     owner ?= 'octoblu'
@@ -55,18 +53,6 @@ class Command
           printer.printDeployment deployment
           printer.printDockerUrls dockerUrls
           printer.printGovernators governators
-
-  _getPackageName: =>
-    pkgPath = path.join process.cwd(), 'package.json'
-    try
-      pkg = JSON.parse fs.readFileSync pkgPath
-      return pkg.name
-
-  _getPackageVersion: =>
-    pkgPath = path.join process.cwd(), 'package.json'
-    try
-      pkg = JSON.parse fs.readFileSync pkgPath
-      return "v#{pkg.version}"
 
   die: (error) =>
     return process.exit(0) unless error?

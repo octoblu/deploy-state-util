@@ -1,5 +1,3 @@
-fs                 = require 'fs'
-path               = require 'path'
 _                  = require 'lodash'
 colors             = require 'colors'
 program            = require 'commander'
@@ -20,15 +18,15 @@ program
 class Command
   constructor: ->
     process.on 'uncaughtException', @die
+    @config = new Config()
     {@repo, @owner, @json} = @parseOptions()
-    config = new Config().get()
-    @deployStateService = new DeployStateService { config }
-    @governatorService = new GovernatorService { config }
+    @deployStateService = new DeployStateService { config: @config.get() }
+    @governatorService = new GovernatorService { config: @config.get() }
 
   parseOptions: =>
     program.parse process.argv
     repo = program.args[0]
-    repo ?= @_getPackageName()
+    repo ?= @config.getPackageName()
 
     { owner, json } = program
     owner ?= 'octoblu'
@@ -51,12 +49,6 @@ class Command
   printDeployment: (deployment) =>
     printer = new Printer { slug: "#{deployment.owner}/#{deployment.repo}:#{deployment.tag}" }
     printer.printDeployment deployment
-
-  _getPackageName: =>
-    pkgPath = path.join process.cwd(), 'package.json'
-    try
-      pkg = JSON.parse fs.readFileSync pkgPath
-      return pkg.name
 
   die: (error) =>
     return process.exit(0) unless error?
