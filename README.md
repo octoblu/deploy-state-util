@@ -1,10 +1,14 @@
 # deploy-state-util
 
 [![Dependency status](http://img.shields.io/david/octoblu/deploy-state-util.svg?style=flat)](https://david-dm.org/octoblu/deploy-state-util)
-[![devDependency Status](http://img.shields.io/david/dev/octoblu/deploy-state-util.svg?style=flat)](https://david-dm.org/octoblu/deploy-state-util#info=devDependencies)
-[![Build Status](http://img.shields.io/travis/octoblu/deploy-state-util.svg?style=flat&branch=master)](https://travis-ci.org/octoblu/deploy-state-util)
+[![devDependency Status](http://img.shields.io/david/dev/octoblu/deploy-state-util.svg?style=flat)](https://david-dm.org/octoblu/deploy-state-util)
+[![Build Status](http://img.shields.io/travis/octoblu/deploy-state-util.svg?style=flat)](https://travis-ci.org/octoblu/deploy-state-util)
 
 [![NPM](https://nodei.co/npm/deploy-state-util.svg?style=flat)](https://npmjs.org/package/deploy-state-util)
+
+## Introduction
+
+The utility for the [deploy-state-service](https://github.com/octoblu/deploy-state-service) and other deployment related services.
 
 ## Installing
 
@@ -12,7 +16,36 @@
 npm install --global deploy-state-util
 ```
 
-Make sure muxblu is up-to-date, and you've ran `./install.sh utils`
+**For the octoblu team:** Make sure you have the latest dotfiles.
+
+## Commands
+
+### status
+
+```bash
+deploy-state status
+```
+
+List the status of a deployment. The project name and version will be auto assummed when inside a node project.
+
+## watch
+
+```bash
+deploy-state watch
+```
+
+This is the alternative to `wump`.
+
+Watch the status of a deployment. The project name and version will be auto assummed when inside a node project.
+
+### list
+
+```bash
+deploy-state list
+```
+
+List the deployments of a project. The project name will be auto assummed when inside a node project.
+
 
 ## Example Configuration
 
@@ -50,12 +83,6 @@ Make sure muxblu is up-to-date, and you've ran `./install.sh utils`
     }
   }
 }
-```
-
-### Usage
-
-```bash
-deploy-state --help
 ```
 
 ## License
