@@ -14,6 +14,22 @@ class DeployStateService
       password: config['deploy-state'].password,
     }
 
+  setState: ({ repo, owner, tag, state, passing, type }, callback) =>
+    value = 'failed'
+    value = 'passed' if passing
+    options =
+      baseUrl: @deployStateUri
+      uri: "/deployments/#{owner}/#{repo}/#{tag}/#{type}/#{state}/#{value}"
+      auth: @auth,
+
+    debug 'set state options', options
+    request.put options, (error, response) =>
+      debug 'set state', { error }
+      return callback error if error?
+      if response.statusCode > 499
+        return callback new Error 'Fatal error from deploy state service'
+      callback null
+
   getStatus: ({ owner, repo, tag }, callback) =>
     options =
       baseUrl: @deployStateUri

@@ -4,11 +4,8 @@ packageJSON = require './package.json'
 
 program
   .version packageJSON.version
-  .command 'configure', 'configure a project to work with deploy-state'
-  .command 'list', 'list deployments'
-  .command 'set', 'set the state on a deployment'
-  .command 'status', 'get the status of a deploy'
-  .command 'watch', 'watch the status of a deploy'
+  .command 'cluster', 'set the state state of a deployment'
+  .command 'build', 'set the build state of a deployment'
 
 class Command
   constructor: ->

@@ -36,6 +36,14 @@ deploy-state configure
 
 Configures a project to work with the deploy-state service.
 
+### set
+
+```bash
+deploy-state set [build|cluster]
+```
+
+Set the state of a cluster, or build. Typically used for overriding deployments.
+
 ### status
 
 ```bash
