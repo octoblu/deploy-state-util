@@ -1,6 +1,6 @@
 {
   "name": "deploy-state-util",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "CLI utility for managing the deploy-state-service",
   "keywords": [
     "deploy-state"
@@ -30,7 +30,7 @@
     "test": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul"
   },
   "dependencies": {
-    "@octoblu/docker-hub-api": "^1.0.1",
+    "@octoblu/docker-hub-api": "^1.0.2",
     "async": "^2.0.1",
     "cli-clear": "^1.0.4",
     "coffee-script": "^1.10.0",
