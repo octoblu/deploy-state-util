@@ -2,6 +2,7 @@ _       = require 'lodash'
 request = require 'request'
 async   = require 'async'
 url     = require 'url'
+colors  = require 'colors'
 debug   = require('debug')('deploy-state-util:quay-service')
 
 QUAY_BASE_URL='https://quay.io/api/v1'
@@ -10,19 +11,13 @@ class QuayService
   constructor: ({ config, @quayToken }) ->
     throw new Error 'Missing config argument' unless config?
     throw new Error 'Missing quayToken argument' unless @quayToken?
-    @webhookUrl = url.format {
-      hostname: config['deploy-state'].hostname,
-      protocol: 'https',
-      slashes: true,
-      pathname: '/deployments/quay.io'
-      auth: "#{config['deploy-state'].username}:#{config['deploy-state'].password}"
-    }
 
   configure: ({ @repo, @owner, @isPrivate }, callback) =>
     debug 'setting up quay'
-    @_createRepository (error) =>
+    @_repositoryExists (error, exists) =>
       return callback error if error?
-      @_createNotification callback
+      return callback null if exists?
+      @_clearNotifications callback
 
   _getNotifications: (callback) =>
     debug 'getting notifications'
@@ -43,31 +38,13 @@ class QuayService
       uri: "/repository/#{@owner}/#{@repo}/notification/#{uuid}"
       json: true
 
+    console.log colors.magenta('NOTICE'), colors.white('deleting quay webook')
     @_request options, callback
 
   _clearNotifications: (callback) =>
     @_getNotifications (error, notifications) =>
       return callback error if error?
       async.each notifications, @_deleteNotification, callback
-
-  _createNotification: (callback) =>
-    options =
-      method: 'POST'
-      uri: "/repository/#{@owner}/#{@repo}/notification/"
-      json:
-        eventConfig: {}
-        title: "Deploy State"
-        config:
-          url: @webhookUrl
-        event: "repo_push"
-        method: "webhook"
-
-    @_clearNotifications (error) =>
-      return callback error if error?
-      debug 'create notification in quay', options
-      @_request options, (error, body) =>
-        return callback error if error?
-        callback null
 
   _repositoryExists: (callback) =>
     options =
@@ -80,26 +57,6 @@ class QuayService
       exists = statusCode != 404
       debug 'repo exists', exists
       callback null, exists
-
-  _createRepository: (callback) =>
-    visibility = 'public'
-    visibility = 'private' if @isPrivate
-    options =
-      method: 'POST'
-      uri: '/repository'
-      json:
-        namespace: @owner
-        visibility: visibility
-        repository: @repo
-        description: "Service #{@owner}/#{@repo}"
-
-    @_repositoryExists (error, exists) =>
-      return callback error if error?
-      return callback null if exists
-      debug 'create repository in quay', options
-      @_request options, (error, body) =>
-        return callback error if error?
-        callback null
 
   _request: ({ method, uri, json }, callback) =>
     options = {

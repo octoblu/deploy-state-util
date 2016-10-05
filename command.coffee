@@ -27,7 +27,6 @@ class Command
 
   die: (error) =>
     return process.exit(0) unless error?
-    console.error 'ERROR'
     console.error error.stack
     process.exit 1
 

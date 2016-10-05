@@ -32,10 +32,10 @@ class Command
     { owner, cluster } = program
     owner ?= 'octoblu'
 
-    throw new Error 'Missing repo argument' unless repo?
-    throw new Error 'Missing tag argument' unless tag?
-    throw new Error 'Missing cluster argument' unless cluster?
-    throw new Error 'Missing passing argument' unless program.passing?
+    @dieHelp new Error 'Missing repo' unless repo?
+    @dieHelp new Error 'Missing tag' unless tag?
+    @dieHelp new Error 'Missing cluster argument' unless cluster?
+    @dieHelp new Error 'Missing passing argument' unless program.passing?
 
     passing = false
     passing = true if program.passing == 'true'
@@ -48,9 +48,12 @@ class Command
       return @die error if error?
       process.exit 0
 
+  dieHelp: (error) =>
+    program.outputHelp()
+    return @die error
+
   die: (error) =>
     return process.exit(0) unless error?
-    console.error 'ERROR'
     console.error error.stack
     process.exit 1
 

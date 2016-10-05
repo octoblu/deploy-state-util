@@ -37,8 +37,8 @@ class Command
     { owner, json } = program
     owner ?= 'octoblu'
 
-    throw new Error 'Missing repo' unless repo?
-    throw new Error 'Missing tag' unless tag?
+    @dieHelp new Error 'Missing repo' unless repo?
+    @dieHelp new Error 'Missing tag' unless tag?
 
     return { repo, owner, json: json?, tag }
 
@@ -62,9 +62,12 @@ class Command
           printer.printGovernators governators
           _.delay @getStatus, 1000 * 40
 
+  dieHelp: (error) =>
+    program.outputHelp()
+    return @die error
+
   die: (error) =>
     return process.exit(0) unless error?
-    console.error 'ERROR'
     console.error error.stack
     process.exit 1
 

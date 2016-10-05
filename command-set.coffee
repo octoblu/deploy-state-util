@@ -22,9 +22,12 @@ class Command
     program.outputHelp()
     process.exit 0
 
+  dieHelp: (error) =>
+    program.outputHelp()
+    return @die error
+
   die: (error) =>
     return process.exit(0) unless error?
-    console.error 'ERROR'
     console.error error.stack
     process.exit 1
 
