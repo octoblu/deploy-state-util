@@ -16,7 +16,7 @@ class QuayService
     debug 'setting up quay'
     @_repositoryExists (error, exists) =>
       return callback error if error?
-      return callback null if exists?
+      return callback null unless exists
       @_clearNotifications callback
 
   _getNotifications: (callback) =>

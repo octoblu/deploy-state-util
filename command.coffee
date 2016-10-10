@@ -5,6 +5,7 @@ packageJSON = require './package.json'
 program
   .version packageJSON.version
   .command 'configure', 'configure a project to work with deploy-state'
+  .command 'hub', 'configure a project to use docker hub (no deploy-state webhooks)'
   .command 'list', 'list deployments'
   .command 'set', 'set the state on a deployment'
   .command 'status', 'get the status of a deploy'

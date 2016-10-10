@@ -4,9 +4,10 @@ colors       = require 'colors'
 debug        = require('debug')('deploy-state-util:docker-hub-service')
 
 class DockerHubService
-  constructor: ({ config, dockerHubToken }) ->
+  constructor: ({ config, dockerHubToken, @hubOnly }) ->
     throw new Error 'Missing config argument' unless config?
     throw new Error 'Missing dockerHubToken argument' unless dockerHubToken?
+    @hubOnly ?= false
     dockerHubApi.setLoginToken(dockerHubToken)
     @webhookUrl = url.format {
       hostname: config['deploy-state'].hostname,
@@ -30,6 +31,7 @@ class DockerHubService
       @_createRepository callback
 
   _ensureWebhook: (callback) =>
+    return callback null if @hubOnly
     @_createWebhook (error, webhookId) =>
       return callback error if error?
       return callback null unless webhookId?

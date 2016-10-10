@@ -1,6 +1,6 @@
 {
   "name": "deploy-state-util",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "CLI utility for managing the deploy-state-service",
   "keywords": [
     "deploy-state"
@@ -13,6 +13,7 @@
   },
   "bin": {
     "deploy-state-configure": "./command-configure.js",
+    "deploy-state-hub": "./command-hub.js",
     "deploy-state-list": "./command-list.js",
     "deploy-state-set-cluster": "./command-set-cluster.js",
     "deploy-state-set-build": "./command-set-build.js",
