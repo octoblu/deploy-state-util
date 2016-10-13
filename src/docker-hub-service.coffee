@@ -10,11 +10,10 @@ class DockerHubService
     @hubOnly ?= false
     dockerHubApi.setLoginToken(dockerHubToken)
     @webhookUrl = url.format {
-      hostname: config['deploy-state'].hostname,
+      hostname: config['beekeeper'].hostname,
       protocol: 'https',
       slashes: true,
-      pathname: '/deployments/docker-hub'
-      auth: "#{config['deploy-state'].username}:#{config['deploy-state'].password}"
+      pathname: '/webhooks/docker:hub'
     }
     debug 'webhookUrl', @webhookUrl
 
@@ -77,7 +76,7 @@ class DockerHubService
 
   _createWebhook: (callback) =>
     debug 'creating webhook'
-    dockerHubApi.createWebhook @owner, @repo, 'Deploy State'
+    dockerHubApi.createWebhook @owner, @repo, 'Beekeeper'
       .then (webhook) =>
         debug 'create webhook response', webhook
         if webhook?.name[0].indexOf('already exists') > -1

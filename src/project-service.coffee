@@ -14,10 +14,10 @@ class ProjectService
     @packagePath = path.join process.cwd(), 'package.json'
     @dockerFilePath = path.join process.cwd(), 'Dockerfile'
     @webhookUrl = url.format {
-      hostname: config['deploy-state'].hostname,
+      hostname: config['beekeeper'].hostname,
       protocol: 'https',
       slashes: true,
-      pathname: '/deployments/travis-ci'
+      pathname: '/webhooks/travis:ci'
     }
 
   configure: ({ isPrivate }, callback) =>
@@ -56,7 +56,7 @@ class ProjectService
       orgData = _.cloneDeep data
       type = 'pro' if isPrivate
       type ?= 'org'
-      _.set data, 'notifications.webhooks', "#{@webhookUrl}/#{type}" unless @hubOnly
+      _.set data, 'notifications.webhooks', [@webhookUrl] unless @hubOnly
       data.after_success ?= []
       after_success = [
         'npm run coverage'
