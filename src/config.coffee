@@ -1,3 +1,4 @@
+_    = require 'lodash'
 path = require 'path'
 
 class Config
@@ -6,11 +7,13 @@ class Config
     @pkgPath = path.join process.cwd(), 'package.json'
 
   get: =>
-    try
-      return require @configPath
-    catch error
-      console.error "Missing deploy-state-util configuration", configPath
+    config = @_getConfig()
+
+    unless _.get(config, 'beekeper')?
+      console.error "Missing beekeper in #{@configPath}. Are your dotfiles up to date?"
       process.exit 1
+
+    return config
 
   getPackageName: =>
     try
@@ -19,5 +22,12 @@ class Config
   getPackageVersion: =>
     try
       return "v#{require(@pkgPath).version}"
+
+  _getConfig: =>
+    try
+      return require @configPath
+    catch
+      console.error "Missing deploy-state-util configuration", @configPath
+      process.exit 1
 
 module.exports = Config
