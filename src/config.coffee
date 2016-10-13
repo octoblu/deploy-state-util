@@ -9,8 +9,8 @@ class Config
   get: =>
     config = @_getConfig()
 
-    unless _.get(config, 'beekeper')?
-      console.error "Missing beekeper in #{@configPath}. Are your dotfiles up to date?"
+    unless _.get(config, 'beekeeper')?
+      console.error "Missing beekeeper in #{@configPath}. Are your dotfiles up to date?"
       process.exit 1
 
     return config
